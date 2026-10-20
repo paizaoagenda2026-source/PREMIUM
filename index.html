@@ -2,12 +2,26 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
 <title>PREMIUM CATALISADORES – Loja Oficial</title>
+
+<!-- ============ PWA META TAGS ============ -->
+<meta name="theme-color" content="#0067b2">
+<meta name="description" content="Catalisadores com garantia de fábrica. Encontre a peça certa para seu veículo.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Premium Cat">
+<meta name="application-name" content="Premium Cat">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20512%20512%22%3E%3Crect%20width%3D%22512%22%20height%3D%22512%22%20rx%3D%22110%22%20fill%3D%22%230067b2%22%2F%3E%3Ctext%20x%3D%22256%22%20y%3D%22320%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-family%3D%22Arial%2Csans-serif%22%20font-weight%3D%22900%22%20font-size%3D%22200%22%3EPC%3C%2Ftext%3E%3C%2Fsvg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20512%20512%22%3E%3Crect%20width%3D%22512%22%20height%3D%22512%22%20rx%3D%22110%22%20fill%3D%22%230067b2%22%2F%3E%3Ctext%20x%3D%22256%22%20y%3D%22320%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-family%3D%22Arial%2Csans-serif%22%20font-weight%3D%22900%22%20font-size%3D%22200%22%3EPC%3C%2Ftext%3E%3C%2Fsvg%3E">
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--primary:#0067b2;--primary-dark:#004a80;--primary-light:#e6f1fa;--dark:#0f172a;--gray:#64748b;--gray-light:#94a3b8;--light:#f2f7fa;--border:#e2e8f0;--danger:#dc2626;--success:#16a34a;--warning:#f59e0b}
-body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:var(--dark);background:#fff;line-height:1.5}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:var(--dark);background:#fff;line-height:1.5;padding-bottom:env(safe-area-inset-bottom)}
 a{color:inherit;text-decoration:none}
 button{font-family:inherit;cursor:pointer;border:none}
 img{max-width:100%;display:block}
@@ -153,6 +167,53 @@ textarea.form-control{resize:vertical;min-height:80px}
 .wa-float:hover{transform:scale(1.1);background:#128c7e}
 .wa-float svg{width:32px;height:32px;fill:#fff}
 
+/* ============ PWA INSTALL BUTTON (PULSANTE) ============ */
+.install-btn{
+  position:fixed;
+  bottom:95px;
+  right:20px;
+  background:linear-gradient(135deg,#0067b2,#004a80);
+  color:#fff;
+  border:2px solid rgba(255,255,255,.25);
+  padding:14px 22px 14px 18px;
+  border-radius:50px;
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:.3px;
+  cursor:pointer;
+  display:none;
+  align-items:center;
+  gap:10px;
+  z-index:901;
+  box-shadow:0 6px 24px rgba(0,103,178,.5);
+  animation:installPulse 1.8s ease-in-out infinite;
+  transition:transform .2s;
+  font-family:inherit;
+  white-space:nowrap;
+}
+.install-btn.show{display:flex}
+.install-btn:hover{transform:scale(1.06);animation:none;box-shadow:0 8px 28px rgba(0,103,178,.7);background:linear-gradient(135deg,#004a80,#0067b2)}
+.install-btn:active{transform:scale(.98)}
+.install-btn svg{width:22px;height:22px;flex-shrink:0;animation:installBounce 1.8s ease-in-out infinite}
+.install-btn .badge-new{
+  position:absolute;top:-6px;right:-6px;
+  background:var(--danger);color:#fff;font-size:10px;font-weight:800;
+  padding:3px 7px;border-radius:10px;letter-spacing:.5px;
+  box-shadow:0 2px 6px rgba(0,0,0,.3);
+}
+@keyframes installPulse{
+  0%,100%{box-shadow:0 6px 24px rgba(0,103,178,.5),0 0 0 0 rgba(0,103,178,.8)}
+  50%{box-shadow:0 6px 24px rgba(0,103,178,.5),0 0 0 18px rgba(0,103,178,0)}
+}
+@keyframes installBounce{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-3px)}
+}
+@media (max-width:768px){
+  .install-btn{bottom:85px;right:12px;padding:12px 18px 12px 14px;font-size:13px}
+  .install-btn svg{width:20px;height:20px}
+}
+
 /* LOGIN TABS */
 .login-tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:20px}
 .login-tab{flex:1;padding:12px;background:none;border:none;font-weight:700;font-size:14px;color:var(--gray);border-bottom:3px solid transparent;margin-bottom:-2px;transition:.2s}
@@ -291,6 +352,17 @@ textarea.form-control{resize:vertical;min-height:80px}
 <a href="https://wa.me/5511974910081?text=Ol%C3%A1%2C%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es" target="_blank" class="wa-float" title="Fale conosco no WhatsApp">
   <svg viewBox="0 0 448 512"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
 </a>
+
+<!-- ============ PWA INSTALL BUTTON ============ -->
+<button class="install-btn" id="install-btn" onclick="triggerInstall()" aria-label="Instalar aplicativo">
+  <span class="badge-new">APP</span>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+    <polyline points="7 10 12 15 17 10"/>
+    <line x1="12" y1="15" x2="12" y2="3"/>
+  </svg>
+  <span>Instalar App</span>
+</button>
 
 <!-- LOGIN MODAL -->
 <div class="modal" id="login-modal">
@@ -529,6 +601,25 @@ textarea.form-control{resize:vertical;min-height:80px}
   </div>
 </div>
 
+<!-- iOS INSTALL INSTRUCTIONS -->
+<div class="modal" id="ios-install-modal" style="z-index:1200">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">📲 Instalar no iPhone/iPad</div>
+      <button class="modal-close" onclick="closeModal('ios-install-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="margin-bottom:16px;line-height:1.7">Para instalar o app no seu dispositivo iOS:</p>
+      <ol style="padding-left:22px;line-height:2.1;font-size:14px">
+        <li>Toque no botão <strong>Compartilhar</strong> 📤 na barra inferior do Safari</li>
+        <li>Role as opções e toque em <strong>"Adicionar à Tela de Início"</strong></li>
+        <li>Confirme tocando em <strong>"Adicionar"</strong></li>
+      </ol>
+      <p style="margin-top:16px;color:var(--gray);font-size:13px">O app aparecerá na sua tela inicial como um aplicativo nativo.</p>
+    </div>
+  </div>
+</div>
+
 <!-- TOASTS -->
 <div class="toast-container" id="toast-container"></div>
 
@@ -548,9 +639,6 @@ let state = {
   products:[], users:[], coupons:[], cart:[], session:null, orders:[]
 };
 
-/* ============================================================
-   UTILITÁRIOS
-   ============================================================ */
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 function fmt(v){ return Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -570,9 +658,6 @@ function toast(msg, type='success'){
   setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(()=>el.remove(),300); }, 3000);
 }
 
-/* ============================================================
-   PERSISTÊNCIA
-   ============================================================ */
 function saveAll(){
   try{
     localStorage.setItem(KEYS.products, JSON.stringify(state.products));
@@ -588,16 +673,12 @@ function saveAll(){
 
 function loadAll(){
   const p = localStorage.getItem(KEYS.products);
-  if(p === null){
-    state.products = seedProducts();
-  } else {
-    try{ state.products = JSON.parse(p) || []; }catch(e){ state.products = []; }
-  }
+  if(p === null){ state.products = seedProducts(); }
+  else { try{ state.products = JSON.parse(p) || []; }catch(e){ state.products = []; } }
 
   const u = localStorage.getItem(KEYS.users);
-  if(u === null){
-    state.users = [ADMIN_DEFAULT];
-  } else {
+  if(u === null){ state.users = [ADMIN_DEFAULT]; }
+  else {
     try{ state.users = JSON.parse(u) || []; }catch(e){ state.users = [ADMIN_DEFAULT]; }
     if(!state.users.find(x=>x.username===ADMIN_DEFAULT.username)){
       state.users.unshift(ADMIN_DEFAULT);
@@ -605,11 +686,8 @@ function loadAll(){
   }
 
   const cp = localStorage.getItem(KEYS.coupons);
-  if(cp === null){
-    state.coupons = [{ code:'BEMVINDO10', type:'percent', value:10 }];
-  } else {
-    try{ state.coupons = JSON.parse(cp) || []; }catch(e){ state.coupons = []; }
-  }
+  if(cp === null){ state.coupons = [{ code:'BEMVINDO10', type:'percent', value:10 }]; }
+  else { try{ state.coupons = JSON.parse(cp) || []; }catch(e){ state.coupons = []; } }
 
   try{ state.cart = JSON.parse(localStorage.getItem(KEYS.cart)||'[]') || []; }catch(e){ state.cart = []; }
   try{ state.session = JSON.parse(localStorage.getItem(KEYS.session)||'null'); }catch(e){ state.session = null; }
@@ -631,9 +709,6 @@ function seedProducts(){
   ];
 }
 
-/* ============================================================
-   RENDERIZAÇÃO - PRODUTOS
-   ============================================================ */
 function renderProducts(){
   const grid = document.getElementById('products-grid');
   const search = (document.getElementById('search-input').value || '').toLowerCase().trim();
@@ -674,27 +749,15 @@ function renderProducts(){
   }).join('');
 }
 
-/* ============================================================
-   MODAIS
-   ============================================================ */
-function openModal(id){
-  const m = document.getElementById(id);
-  if(m) m.classList.add('active');
-}
-function closeModal(id){
-  const m = document.getElementById(id);
-  if(m) m.classList.remove('active');
-}
-// Fechar modal clicando fora
+function openModal(id){ const m = document.getElementById(id); if(m) m.classList.add('active'); }
+function closeModal(id){ const m = document.getElementById(id); if(m) m.classList.remove('active'); }
+
 document.querySelectorAll('.modal').forEach(m=>{
   m.addEventListener('click', e=>{
     if(e.target === m) m.classList.remove('active');
   });
 });
 
-/* ============================================================
-   LOGIN / CADASTRO
-   ============================================================ */
 function handleAccountClick(){
   if(state.session){
     const dd = document.getElementById('account-dropdown');
@@ -763,20 +826,13 @@ function updateAccountUI(){
   } else {
     label.textContent = 'Entrar';
   }
-  // Reset account button click
   const btn = document.getElementById('account-btn');
   btn.onclick = handleAccountClick;
   if(state.session && state.session.role === 'admin'){
-    // Admin: clicar abre painel
-    btn.onclick = ()=>{
-      openAdmin();
-    };
+    btn.onclick = ()=>{ openAdmin(); };
   }
 }
 
-/* ============================================================
-   ADMIN
-   ============================================================ */
 function openAdmin(){
   if(!state.session || state.session.role !== 'admin'){
     toast('Acesso restrito ao administrador','error');
@@ -838,6 +894,7 @@ function openProductForm(id){
     document.getElementById('product-form-title').textContent = 'Novo Produto';
     document.getElementById('product-id').value = '';
   }
+  currentImageData = null;
   openModal('product-form-modal');
 }
 
@@ -912,7 +969,6 @@ function deleteProduct(id){
   toast('Produto excluído','success');
 }
 
-/* CUPONS */
 function renderAdminCoupons(){
   const tb = document.getElementById('admin-coupons-list');
   if(state.coupons.length===0){
@@ -951,7 +1007,6 @@ function deleteCoupon(code){
   toast('Cupom excluído','success');
 }
 
-/* USUÁRIOS */
 function renderAdminUsers(){
   const tb = document.getElementById('admin-users-list');
   if(state.users.length===0){
@@ -993,9 +1048,6 @@ function deleteUser(i){
   toast('Usuário excluído','success');
 }
 
-/* ============================================================
-   CARRINHO
-   ============================================================ */
 function addToCart(productId){
   const p = state.products.find(x=>x.id===productId);
   if(!p){ toast('Produto não encontrado','error'); return; }
@@ -1109,21 +1161,13 @@ function removeCoupon(){
   renderCart();
 }
 
-/* ============================================================
-   CHECKOUT
-   ============================================================ */
 function startCheckout(){
   if(state.cart.length === 0){ toast('Carrinho vazio','error'); return; }
-  if(!state.session){
-    // Permite checkout como visitante, mas podemos pedir login
-    // Vamos permitir sem exigir login
-  } else if(state.session && state.session.role === 'customer'){
-    // Preenche dados automaticamente
+  if(state.session && state.session.role === 'customer'){
     const user = state.users.find(u=>u.username===state.session.username);
     if(user && user.phone) document.getElementById('checkout-phone').value = user.phone;
     document.getElementById('checkout-name').value = state.session.username;
   }
-  // Resumo
   const summary = document.getElementById('checkout-summary');
   let subtotal = 0;
   let html = '<strong>Resumo do pedido:</strong><br><br>';
@@ -1171,17 +1215,12 @@ function submitCheckout(e){
   const total = subtotal - discount;
 
   const order = {
-    id: uid(),
-    date: new Date().toISOString(),
-    customer: name,
-    phone: phone,
-    address: address,
-    notes: notes,
+    id: uid(), date: new Date().toISOString(),
+    customer: name, phone: phone, address: address, notes: notes,
     items, subtotal, discount, couponCode, total
   };
   state.orders.push(order);
 
-  // Montar mensagem WhatsApp
   let msg = '*🛒 NOVO PEDIDO – PREMIUM CATALISADORES*\n\n';
   msg += '*Cliente:* '+name+'\n';
   msg += '*Telefone:* '+phone+'\n';
@@ -1200,7 +1239,6 @@ function submitCheckout(e){
 
   const url = 'https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(msg);
 
-  // Limpar carrinho
   state.cart = [];
   window.__appliedCoupon = null;
   saveAll();
@@ -1214,7 +1252,89 @@ function submitCheckout(e){
 }
 
 /* ============================================================
-   INICIALIZAÇÃO
+   PWA – INSTALL PROMPT
+   ============================================================ */
+let deferredPrompt = null;
+
+function isInStandaloneMode(){
+  return window.matchMedia('(display-mode: standalone)').matches ||
+         window.navigator.standalone === true ||
+         document.referrer.includes('android-app://');
+}
+
+function isIOSDevice(){
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
+function showInstallButton(){
+  const btn = document.getElementById('install-btn');
+  if(btn) btn.classList.add('show');
+}
+
+function hideInstallButton(){
+  const btn = document.getElementById('install-btn');
+  if(btn) btn.classList.remove('show');
+}
+
+function triggerInstall(){
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult)=>{
+      if(choiceResult.outcome === 'accepted'){
+        hideInstallButton();
+        toast('Instalando app...','success');
+      } else {
+        toast('Instalação cancelada','warning');
+      }
+      deferredPrompt = null;
+    }).catch(()=>{
+      deferredPrompt = null;
+    });
+  } else if(isIOSDevice()){
+    openModal('ios-install-modal');
+  } else {
+    toast('Para instalar, use o menu do seu navegador → "Instalar app"','warning');
+  }
+}
+
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault();
+  deferredPrompt = e;
+  if(!isInStandaloneMode()) showInstallButton();
+});
+
+window.addEventListener('appinstalled', ()=>{
+  deferredPrompt = null;
+  hideInstallButton();
+  toast('🎉 App instalado com sucesso!','success');
+});
+
+// Init PWA state
+if(isInStandaloneMode()){
+  hideInstallButton();
+} else if(isIOSDevice()){
+  // iOS não tem beforeinstallprompt - mostramos o botão com instruções
+  setTimeout(showInstallButton, 1500);
+}
+
+/* ============================================================
+   SERVICE WORKER REGISTRATION
+   ============================================================ */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => {
+        console.log('[PWA] Service Worker registrado. Escopo:', reg.scope);
+        reg.update().catch(()=>{});
+      })
+      .catch(err => {
+        console.warn('[PWA] Falha ao registrar SW:', err);
+      });
+  });
+}
+
+/* ============================================================
+   INIT
    ============================================================ */
 function init(){
   loadAll();
@@ -1222,16 +1342,17 @@ function init(){
   updateCartCount();
   updateAccountUI();
 
-  // Re-render cart always when opened
   const cartModal = document.getElementById('cart-modal');
   const observer = new MutationObserver(()=>{
     if(cartModal.classList.contains('active')) renderCart();
   });
   observer.observe(cartModal, { attributes:true, attributeFilter:['class'] });
 
-  // Fechar dropdown ao clicar fora já registrado
-  // Inicializar preview de imagem
   currentImageData = null;
+
+  if(location.protocol === 'file:'){
+    console.warn('[PWA] Aviso: PWA não funciona em file://. Use um servidor HTTP local ou HTTPS.');
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init);
