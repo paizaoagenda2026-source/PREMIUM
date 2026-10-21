@@ -1,12 +1,13 @@
 /* ============================================================
    SERVICE WORKER – PREMIUM CATALISADORES PWA
    ============================================================ */
-const CACHE_NAME = 'premium-cat-v1.0.0';
+const CACHE_NAME = 'premium-cat-v1.1.0';
 
 const urlsToCache = [
   './',
   './index.html',
-  './manifest.json'
+  './manifest.json',
+  './logo.png'
 ];
 
 // INSTALL – faz o cache inicial
