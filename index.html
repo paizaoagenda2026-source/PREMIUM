@@ -54,6 +54,7 @@ img{max-width:100%;display:block}
 .nav-menu ul{display:flex;gap:30px;list-style:none;flex-wrap:wrap}
 .nav-menu a{color:#fff;font-weight:600;font-size:14px;text-transform:uppercase;letter-spacing:.3px;cursor:pointer}
 .nav-menu a:hover{color:var(--warning)}
+.nav-menu a.active{color:var(--warning);text-decoration:underline;text-underline-offset:4px}
 
 /* HERO */
 .hero{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);color:#fff;padding:60px 20px;text-align:center}
@@ -92,6 +93,7 @@ img{max-width:100%;display:block}
 .btn-outline:hover{background:var(--primary);color:#fff}
 .btn-sm{padding:6px 12px;font-size:12px}
 .btn-block{width:100%}
+.btn:disabled{opacity:.4;cursor:not-allowed}
 
 /* MODAL */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:1000;padding:20px;overflow-y:auto}
@@ -230,6 +232,10 @@ textarea.form-control{resize:vertical;min-height:80px}
 .admin-greeting{background:var(--primary-light);border-left:4px solid var(--primary);padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:13px;color:var(--primary-dark)}
 .empty-state{text-align:center;padding:30px 20px;color:var(--gray);font-size:14px}
 
+/* NAV ADMIN ROW */
+.nav-edit-row{display:grid;grid-template-columns:2fr 2fr auto auto auto;gap:8px;align-items:center;margin-bottom:8px;padding:10px;border:1px solid var(--border);border-radius:8px;background:#fafbfc}
+.nav-edit-row .form-control{padding:8px 10px;font-size:13px}
+
 /* IMAGE PREVIEW */
 .img-preview{width:100px;height:100px;border-radius:10px;border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-top:8px;background:var(--light)}
 .img-preview img{width:100%;height:100%;object-fit:contain;padding:4px}
@@ -250,6 +256,8 @@ textarea.form-control{resize:vertical;min-height:80px}
   .nav-menu a{font-size:12px}
   .modal{padding:10px}
   .modal-body{padding:16px}
+  .nav-edit-row{grid-template-columns:1fr 1fr;gap:6px}
+  .nav-edit-row .form-control{grid-column:1/-1}
 }
 </style>
 </head>
@@ -294,14 +302,7 @@ textarea.form-control{resize:vertical;min-height:80px}
   </div>
   <div class="nav-menu">
     <div class="container">
-      <ul>
-        <li><a onclick="window.scrollTo({top:600,behavior:'smooth'})">Catalisadores</a></li>
-        <li><a onclick="window.scrollTo({top:600,behavior:'smooth'})">Linha Diesel</a></li>
-        <li><a onclick="window.scrollTo({top:600,behavior:'smooth'})">Linha Carros</a></li>
-        <li><a onclick="window.scrollTo({top:600,behavior:'smooth'})">Linha Vans</a></li>
-        <li><a onclick="window.scrollTo({top:600,behavior:'smooth'})">Exclusividades</a></li>
-        <li><a onclick="window.scrollTo({top:600,behavior:'smooth'})">Mais Vendidos</a></li>
-      </ul>
+      <ul id="nav-menu-list"></ul>
     </div>
   </div>
 </header>
@@ -419,6 +420,7 @@ textarea.form-control{resize:vertical;min-height:80px}
         <button class="tab active" onclick="switchAdminTab('products',this)">🛒 Produtos</button>
         <button class="tab" onclick="switchAdminTab('coupons',this)">🎟️ Cupons</button>
         <button class="tab" onclick="switchAdminTab('users',this)">👥 Usuários</button>
+        <button class="tab" onclick="switchAdminTab('menu',this)">📋 Menu</button>
       </div>
 
       <!-- PRODUTOS -->
@@ -489,6 +491,27 @@ textarea.form-control{resize:vertical;min-height:80px}
             <tbody id="admin-users-list"></tbody>
           </table>
         </div>
+      </div>
+
+      <!-- MENU -->
+      <div class="tab-panel" id="panel-menu">
+        <div class="admin-greeting" style="margin-bottom:16px">
+          💡 Edite o nome dos itens do menu, adicione novas linhas, reordene ou exclua. A "Categoria" é opcional: se preenchida, o item filtra os produtos por essa categoria. Se vazia, apenas rola até os produtos.
+        </div>
+        <div style="background:var(--light);padding:14px;border-radius:10px;margin-bottom:18px">
+          <div style="display:grid;grid-template-columns:2fr 2fr auto;gap:10px;align-items:end">
+            <div class="form-group" style="margin:0">
+              <label>Nome do item *</label>
+              <input type="text" class="form-control" id="nav-new-label" placeholder="Ex: Novidades">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label>Categoria (opcional)</label>
+              <input type="text" class="form-control" id="nav-new-filter" placeholder="Ex: Linha Diesel">
+            </div>
+            <button class="btn btn-primary" onclick="addNavItem()">+ Adicionar</button>
+          </div>
+        </div>
+        <div id="admin-nav-list"></div>
       </div>
     </div>
   </div>
@@ -632,12 +655,16 @@ const ADMIN_DEFAULT = { username:'PROGRAMADOR', password:'080888', role:'admin' 
 
 const KEYS = {
   products:'pc_products_v1', users:'pc_users_v1', coupons:'pc_coupons_v1',
-  cart:'pc_cart_v1', session:'pc_session_v1', orders:'pc_orders_v1'
+  cart:'pc_cart_v1', session:'pc_session_v1', orders:'pc_orders_v1',
+  nav:'pc_nav_v1'
 };
 
 let state = {
-  products:[], users:[], coupons:[], cart:[], session:null, orders:[]
+  products:[], users:[], coupons:[], cart:[], session:null, orders:[], nav:[]
 };
+
+let currentImageData = null;
+window.__currentNavFilter = null;
 
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 function fmt(v){ return Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
@@ -666,6 +693,7 @@ function saveAll(){
     localStorage.setItem(KEYS.cart, JSON.stringify(state.cart));
     localStorage.setItem(KEYS.session, JSON.stringify(state.session));
     localStorage.setItem(KEYS.orders, JSON.stringify(state.orders));
+    localStorage.setItem(KEYS.nav, JSON.stringify(state.nav));
   }catch(e){
     toast('Erro ao salvar dados. Armazenamento cheio?','error');
   }
@@ -689,6 +717,13 @@ function loadAll(){
   if(cp === null){ state.coupons = [{ code:'BEMVINDO10', type:'percent', value:10 }]; }
   else { try{ state.coupons = JSON.parse(cp) || []; }catch(e){ state.coupons = []; } }
 
+  const nav = localStorage.getItem(KEYS.nav);
+  if(nav === null){ state.nav = seedNav(); }
+  else {
+    try{ state.nav = JSON.parse(nav) || []; }catch(e){ state.nav = []; }
+    if(state.nav.length === 0) state.nav = seedNav();
+  }
+
   try{ state.cart = JSON.parse(localStorage.getItem(KEYS.cart)||'[]') || []; }catch(e){ state.cart = []; }
   try{ state.session = JSON.parse(localStorage.getItem(KEYS.session)||'null'); }catch(e){ state.session = null; }
   try{ state.orders = JSON.parse(localStorage.getItem(KEYS.orders)||'[]') || []; }catch(e){ state.orders = []; }
@@ -709,10 +744,53 @@ function seedProducts(){
   ];
 }
 
+function seedNav(){
+  return [
+    { id: uid(), label: 'Catalisadores', filter: '' },
+    { id: uid(), label: 'Linha Diesel',  filter: 'Linha Diesel' },
+    { id: uid(), label: 'Linha Carros',  filter: 'Linha Carros' },
+    { id: uid(), label: 'Linha Vans',    filter: 'Linha Vans' },
+    { id: uid(), label: 'Exclusividades',filter: 'Exclusividades BR' },
+    { id: uid(), label: 'Mais Vendidos', filter: '' }
+  ];
+}
+
+/* ============================================================
+   MENU DINÂMICO
+   ============================================================ */
+function renderNav(){
+  const ul = document.getElementById('nav-menu-list');
+  if(!ul) return;
+  ul.innerHTML = state.nav.map(item => {
+    const active = (window.__currentNavFilter || '') === (item.filter || '') ? 'active' : '';
+    return `<li><a onclick="handleNavClick('${item.id}')" class="${active}">${esc(item.label)}</a></li>`;
+  }).join('');
+}
+
+function handleNavClick(id){
+  const item = state.nav.find(x => x.id === id);
+  if(!item) return;
+  window.__currentNavFilter = item.filter || null;
+  const sInput = document.getElementById('search-input');
+  if(sInput) sInput.value = '';
+  renderProducts();
+  renderNav();
+  window.scrollTo({top:600, behavior:'smooth'});
+}
+
+/* ============================================================
+   RENDERIZAÇÃO - PRODUTOS
+   ============================================================ */
 function renderProducts(){
   const grid = document.getElementById('products-grid');
   const search = (document.getElementById('search-input').value || '').toLowerCase().trim();
+  if(search) window.__currentNavFilter = null;
+
   let list = state.products;
+  if(window.__currentNavFilter){
+    const f = window.__currentNavFilter.toLowerCase();
+    list = list.filter(p => (p.category||'').toLowerCase() === f);
+  }
   if(search){
     list = list.filter(p => (p.name||'').toLowerCase().includes(search) || (p.category||'').toLowerCase().includes(search));
   }
@@ -749,6 +827,9 @@ function renderProducts(){
   }).join('');
 }
 
+/* ============================================================
+   MODAIS
+   ============================================================ */
 function openModal(id){ const m = document.getElementById(id); if(m) m.classList.add('active'); }
 function closeModal(id){ const m = document.getElementById(id); if(m) m.classList.remove('active'); }
 
@@ -758,6 +839,9 @@ document.querySelectorAll('.modal').forEach(m=>{
   });
 });
 
+/* ============================================================
+   LOGIN / CADASTRO
+   ============================================================ */
 function handleAccountClick(){
   if(state.session){
     const dd = document.getElementById('account-dropdown');
@@ -833,6 +917,9 @@ function updateAccountUI(){
   }
 }
 
+/* ============================================================
+   ADMIN
+   ============================================================ */
 function openAdmin(){
   if(!state.session || state.session.role !== 'admin'){
     toast('Acesso restrito ao administrador','error');
@@ -842,6 +929,7 @@ function openAdmin(){
   renderAdminProducts();
   renderAdminCoupons();
   renderAdminUsers();
+  renderAdminNav();
   openModal('admin-modal');
 }
 
@@ -852,6 +940,9 @@ function switchAdminTab(name, el){
   document.getElementById('panel-'+name).classList.add('active');
 }
 
+/* ============================================================
+   ADMIN – PRODUTOS
+   ============================================================ */
 function renderAdminProducts(){
   const tb = document.getElementById('admin-products-list');
   document.getElementById('products-count').textContent = state.products.length + ' produto(s) cadastrado(s)';
@@ -897,8 +988,6 @@ function openProductForm(id){
   currentImageData = null;
   openModal('product-form-modal');
 }
-
-let currentImageData = null;
 
 function handleImageUpload(e){
   const file = e.target.files[0];
@@ -969,6 +1058,9 @@ function deleteProduct(id){
   toast('Produto excluído','success');
 }
 
+/* ============================================================
+   ADMIN – CUPONS
+   ============================================================ */
 function renderAdminCoupons(){
   const tb = document.getElementById('admin-coupons-list');
   if(state.coupons.length===0){
@@ -1007,6 +1099,9 @@ function deleteCoupon(code){
   toast('Cupom excluído','success');
 }
 
+/* ============================================================
+   ADMIN – USUÁRIOS
+   ============================================================ */
 function renderAdminUsers(){
   const tb = document.getElementById('admin-users-list');
   if(state.users.length===0){
@@ -1048,6 +1143,94 @@ function deleteUser(i){
   toast('Usuário excluído','success');
 }
 
+/* ============================================================
+   ADMIN – MENU
+   ============================================================ */
+function renderAdminNav(){
+  const box = document.getElementById('admin-nav-list');
+  if(!box) return;
+  if(state.nav.length === 0){
+    box.innerHTML = '<div class="empty-state">Nenhum item no menu. Adicione o primeiro acima.</div>';
+    return;
+  }
+  box.innerHTML = state.nav.map((item, i) => `
+    <div class="nav-edit-row">
+      <input type="text" class="form-control" value="${esc(item.label)}" data-original="${esc(item.label)}"
+             placeholder="Nome do item" onchange="updateNavLabel('${item.id}', this)">
+      <input type="text" class="form-control" value="${esc(item.filter||'')}"
+             placeholder="Categoria (opcional)" onchange="updateNavFilter('${item.id}', this)">
+      <button class="btn btn-primary btn-sm" onclick="moveNavItem('${item.id}', -1)" ${i===0?'disabled':''} title="Subir">↑</button>
+      <button class="btn btn-primary btn-sm" onclick="moveNavItem('${item.id}', 1)" ${i===state.nav.length-1?'disabled':''} title="Descer">↓</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteNavItem('${item.id}')" title="Excluir">🗑️</button>
+    </div>
+  `).join('');
+}
+
+function updateNavLabel(id, input){
+  const item = state.nav.find(x => x.id === id);
+  if(!item) return;
+  const val = input.value.trim();
+  if(!val){
+    input.value = input.dataset.original || item.label;
+    toast('O nome não pode ficar vazio','error');
+    return;
+  }
+  item.label = val;
+  input.dataset.original = val;
+  saveAll();
+  renderNav();
+  renderAdminNav();
+  toast('Item atualizado!','success');
+}
+
+function updateNavFilter(id, input){
+  const item = state.nav.find(x => x.id === id);
+  if(!item) return;
+  item.filter = input.value.trim();
+  saveAll();
+  renderNav();
+  toast('Categoria atualizada!','success');
+}
+
+function addNavItem(){
+  const labelEl = document.getElementById('nav-new-label');
+  const filterEl = document.getElementById('nav-new-filter');
+  const label = labelEl.value.trim();
+  const filter = filterEl.value.trim();
+  if(!label){ toast('Digite o nome do item','error'); return; }
+  state.nav.push({ id: uid(), label, filter });
+  saveAll();
+  renderNav();
+  renderAdminNav();
+  labelEl.value = '';
+  filterEl.value = '';
+  toast('Item adicionado ao menu!','success');
+}
+
+function deleteNavItem(id){
+  if(!confirm('Excluir este item do menu?')) return;
+  state.nav = state.nav.filter(x => x.id !== id);
+  saveAll();
+  renderNav();
+  renderAdminNav();
+  toast('Item removido!','success');
+}
+
+function moveNavItem(id, delta){
+  const idx = state.nav.findIndex(x => x.id === id);
+  if(idx < 0) return;
+  const newIdx = idx + delta;
+  if(newIdx < 0 || newIdx >= state.nav.length) return;
+  const [item] = state.nav.splice(idx, 1);
+  state.nav.splice(newIdx, 0, item);
+  saveAll();
+  renderNav();
+  renderAdminNav();
+}
+
+/* ============================================================
+   CARRINHO
+   ============================================================ */
 function addToCart(productId){
   const p = state.products.find(x=>x.id===productId);
   if(!p){ toast('Produto não encontrado','error'); return; }
@@ -1309,22 +1492,20 @@ window.addEventListener('appinstalled', ()=>{
   toast('🎉 App instalado com sucesso!','success');
 });
 
-// Init PWA state
 if(isInStandaloneMode()){
   hideInstallButton();
 } else if(isIOSDevice()){
-  // iOS não tem beforeinstallprompt - mostramos o botão com instruções
   setTimeout(showInstallButton, 1500);
 }
 
 /* ============================================================
-   SERVICE WORKER REGISTRATION
+   SERVICE WORKER
    ============================================================ */
 if('serviceWorker' in navigator){
   window.addEventListener('load', ()=>{
     navigator.serviceWorker.register('./sw.js')
       .then(reg => {
-        console.log('[PWA] Service Worker registrado. Escopo:', reg.scope);
+        console.log('[PWA] SW registrado. Escopo:', reg.scope);
         reg.update().catch(()=>{});
       })
       .catch(err => {
@@ -1339,6 +1520,7 @@ if('serviceWorker' in navigator){
 function init(){
   loadAll();
   renderProducts();
+  renderNav();
   updateCartCount();
   updateAccountUI();
 
