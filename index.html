@@ -57,9 +57,26 @@ img{max-width:100%;display:block}
 .nav-menu a.active{color:var(--warning);text-decoration:underline;text-underline-offset:4px}
 
 /* HERO */
-.hero{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);color:#fff;padding:60px 20px;text-align:center}
+.hero{position:relative;background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);color:#fff;padding:60px 20px;text-align:center;overflow:hidden;min-height:380px;display:flex;align-items:center;justify-content:center}
+.hero-content{position:relative;z-index:2;max-width:700px}
 .hero h1{font-size:42px;font-weight:800;margin-bottom:16px}
-.hero p{font-size:18px;opacity:.9;max-width:600px;margin:0 auto}
+.hero p{font-size:18px;opacity:.9;margin:0 auto}
+
+/* BANNERS LATERAIS PULSANTES */
+.hero-banner{position:absolute;top:50%;transform:translateY(-50%);width:280px;height:280px;object-fit:contain;z-index:1;animation:bannerPulse 2.5s ease-in-out infinite;pointer-events:none;filter:drop-shadow(0 0 20px rgba(255,255,255,0.4));transition:.3s}
+.hero-banner.left{left:2%}
+.hero-banner.right{right:2%}
+.hero-banner.hidden{display:none}
+@keyframes bannerPulse{
+  0%,100%{transform:translateY(-50%) scale(1);filter:drop-shadow(0 0 15px rgba(255,255,255,0.4))}
+  50%{transform:translateY(-50%) scale(1.08);filter:drop-shadow(0 0 35px rgba(255,193,7,0.9))}
+}
+@media (max-width:1100px){
+  .hero-banner{width:220px;height:220px}
+}
+@media (max-width:768px){
+  .hero-banner{display:none}
+}
 
 /* PRODUCTS */
 .section-title{font-size:28px;font-weight:800;text-align:center;margin:40px 0 8px;color:var(--dark)}
@@ -169,52 +186,15 @@ textarea.form-control{resize:vertical;min-height:80px}
 .wa-float:hover{transform:scale(1.1);background:#128c7e}
 .wa-float svg{width:32px;height:32px;fill:#fff}
 
-/* ============ PWA INSTALL BUTTON (PULSANTE) ============ */
-.install-btn{
-  position:fixed;
-  bottom:95px;
-  right:20px;
-  background:linear-gradient(135deg,#0067b2,#004a80);
-  color:#fff;
-  border:2px solid rgba(255,255,255,.25);
-  padding:14px 22px 14px 18px;
-  border-radius:50px;
-  font-size:14px;
-  font-weight:800;
-  letter-spacing:.3px;
-  cursor:pointer;
-  display:none;
-  align-items:center;
-  gap:10px;
-  z-index:901;
-  box-shadow:0 6px 24px rgba(0,103,178,.5);
-  animation:installPulse 1.8s ease-in-out infinite;
-  transition:transform .2s;
-  font-family:inherit;
-  white-space:nowrap;
-}
+/* PWA INSTALL BUTTON */
+.install-btn{position:fixed;bottom:95px;right:20px;background:linear-gradient(135deg,#0067b2,#004a80);color:#fff;border:2px solid rgba(255,255,255,.25);padding:14px 22px 14px 18px;border-radius:50px;font-size:14px;font-weight:800;letter-spacing:.3px;cursor:pointer;display:none;align-items:center;gap:10px;z-index:901;box-shadow:0 6px 24px rgba(0,103,178,.5);animation:installPulse 1.8s ease-in-out infinite;transition:transform .2s;font-family:inherit;white-space:nowrap}
 .install-btn.show{display:flex}
 .install-btn:hover{transform:scale(1.06);animation:none;box-shadow:0 8px 28px rgba(0,103,178,.7);background:linear-gradient(135deg,#004a80,#0067b2)}
 .install-btn:active{transform:scale(.98)}
 .install-btn svg{width:22px;height:22px;flex-shrink:0;animation:installBounce 1.8s ease-in-out infinite}
-.install-btn .badge-new{
-  position:absolute;top:-6px;right:-6px;
-  background:var(--danger);color:#fff;font-size:10px;font-weight:800;
-  padding:3px 7px;border-radius:10px;letter-spacing:.5px;
-  box-shadow:0 2px 6px rgba(0,0,0,.3);
-}
-@keyframes installPulse{
-  0%,100%{box-shadow:0 6px 24px rgba(0,103,178,.5),0 0 0 0 rgba(0,103,178,.8)}
-  50%{box-shadow:0 6px 24px rgba(0,103,178,.5),0 0 0 18px rgba(0,103,178,0)}
-}
-@keyframes installBounce{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-3px)}
-}
-@media (max-width:768px){
-  .install-btn{bottom:85px;right:12px;padding:12px 18px 12px 14px;font-size:13px}
-  .install-btn svg{width:20px;height:20px}
-}
+.install-btn .badge-new{position:absolute;top:-6px;right:-6px;background:var(--danger);color:#fff;font-size:10px;font-weight:800;padding:3px 7px;border-radius:10px;letter-spacing:.5px;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+@keyframes installPulse{0%,100%{box-shadow:0 6px 24px rgba(0,103,178,.5),0 0 0 0 rgba(0,103,178,.8)}50%{box-shadow:0 6px 24px rgba(0,103,178,.5),0 0 0 18px rgba(0,103,178,0)}}
+@keyframes installBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 
 /* LOGIN TABS */
 .login-tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:20px}
@@ -231,8 +211,6 @@ textarea.form-control{resize:vertical;min-height:80px}
 /* ADMIN */
 .admin-greeting{background:var(--primary-light);border-left:4px solid var(--primary);padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:13px;color:var(--primary-dark)}
 .empty-state{text-align:center;padding:30px 20px;color:var(--gray);font-size:14px}
-
-/* NAV ADMIN ROW */
 .nav-edit-row{display:grid;grid-template-columns:2fr 2fr auto auto auto;gap:8px;align-items:center;margin-bottom:8px;padding:10px;border:1px solid var(--border);border-radius:8px;background:#fafbfc}
 .nav-edit-row .form-control{padding:8px 10px;font-size:13px}
 
@@ -258,6 +236,8 @@ textarea.form-control{resize:vertical;min-height:80px}
   .modal-body{padding:16px}
   .nav-edit-row{grid-template-columns:1fr 1fr;gap:6px}
   .nav-edit-row .form-control{grid-column:1/-1}
+  .install-btn{bottom:85px;right:12px;padding:12px 18px 12px 14px;font-size:13px}
+  .install-btn svg{width:20px;height:20px}
 }
 </style>
 </head>
@@ -309,8 +289,13 @@ textarea.form-control{resize:vertical;min-height:80px}
 
 <!-- HERO -->
 <section class="hero">
-  <h1>Catalisadores com Garantia de Fábrica</h1>
-  <p>Encontre a peça certa para seu veículo. Qualidade premium, entrega rápida e o melhor preço do Brasil.</p>
+  <img id="hero-banner-left" class="hero-banner left hidden" src="" alt="Banner">
+  <img id="hero-banner-right" class="hero-banner right hidden" src="" alt="Banner">
+  
+  <div class="hero-content">
+    <h1>Catalisadores com Garantia de Fábrica</h1>
+    <p>Encontre a peça certa para seu veículo. Qualidade premium, entrega rápida e o melhor preço do Brasil.</p>
+  </div>
 </section>
 
 <!-- PRODUCTS -->
@@ -354,7 +339,7 @@ textarea.form-control{resize:vertical;min-height:80px}
   <svg viewBox="0 0 448 512"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
 </a>
 
-<!-- ============ PWA INSTALL BUTTON ============ -->
+<!-- PWA INSTALL BUTTON -->
 <button class="install-btn" id="install-btn" onclick="triggerInstall()" aria-label="Instalar aplicativo">
   <span class="badge-new">APP</span>
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -421,6 +406,7 @@ textarea.form-control{resize:vertical;min-height:80px}
         <button class="tab" onclick="switchAdminTab('coupons',this)">🎟️ Cupons</button>
         <button class="tab" onclick="switchAdminTab('users',this)">👥 Usuários</button>
         <button class="tab" onclick="switchAdminTab('menu',this)">📋 Menu</button>
+        <button class="tab" onclick="switchAdminTab('banners',this)">🖼️ Banners Laterais</button>
       </div>
 
       <!-- PRODUTOS -->
@@ -512,6 +498,31 @@ textarea.form-control{resize:vertical;min-height:80px}
           </div>
         </div>
         <div id="admin-nav-list"></div>
+      </div>
+
+      <!-- BANNERS LATERAIS -->
+      <div class="tab-panel" id="panel-banners">
+        <div class="admin-greeting" style="margin-bottom:16px">
+          💡 Faça o upload das imagens que aparecerão nos lados esquerdo e direito da seção inicial. Elas terão um efeito pulsante e brilho. <strong>Recomendado:</strong> imagens PNG com fundo transparente.
+        </div>
+        <div class="form-row" style="grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div class="form-group" style="background:var(--light); padding:16px; border-radius:10px;">
+            <label style="font-size:15px; margin-bottom:12px; display:block;">⬅️ Banner Esquerdo</label>
+            <input type="file" class="form-control" accept="image/*" onchange="handleBannerUpload(event, 'left')">
+            <div class="img-preview" id="banner-left-preview" style="width:100%; height:180px; margin-top:10px; background:#fff; border-radius:8px;">
+              <span style="color:var(--gray-light);font-size:12px">Sem foto</span>
+            </div>
+            <button class="btn btn-danger btn-block" onclick="removeBanner('left')" style="margin-top:12px">Remover Banner</button>
+          </div>
+          <div class="form-group" style="background:var(--light); padding:16px; border-radius:10px;">
+            <label style="font-size:15px; margin-bottom:12px; display:block;">➡️ Banner Direito</label>
+            <input type="file" class="form-control" accept="image/*" onchange="handleBannerUpload(event, 'right')">
+            <div class="img-preview" id="banner-right-preview" style="width:100%; height:180px; margin-top:10px; background:#fff; border-radius:8px;">
+              <span style="color:var(--gray-light);font-size:12px">Sem foto</span>
+            </div>
+            <button class="btn btn-danger btn-block" onclick="removeBanner('right')" style="margin-top:12px">Remover Banner</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -656,11 +667,12 @@ const ADMIN_DEFAULT = { username:'PROGRAMADOR', password:'080888', role:'admin' 
 const KEYS = {
   products:'pc_products_v1', users:'pc_users_v1', coupons:'pc_coupons_v1',
   cart:'pc_cart_v1', session:'pc_session_v1', orders:'pc_orders_v1',
-  nav:'pc_nav_v1'
+  nav:'pc_nav_v1', banners:'pc_banners_v1'
 };
 
 let state = {
-  products:[], users:[], coupons:[], cart:[], session:null, orders:[], nav:[]
+  products:[], users:[], coupons:[], cart:[], session:null, orders:[], nav:[],
+  banners: { left: null, right: null }
 };
 
 let currentImageData = null;
@@ -694,6 +706,7 @@ function saveAll(){
     localStorage.setItem(KEYS.session, JSON.stringify(state.session));
     localStorage.setItem(KEYS.orders, JSON.stringify(state.orders));
     localStorage.setItem(KEYS.nav, JSON.stringify(state.nav));
+    localStorage.setItem(KEYS.banners, JSON.stringify(state.banners));
   }catch(e){
     toast('Erro ao salvar dados. Armazenamento cheio?','error');
   }
@@ -722,6 +735,11 @@ function loadAll(){
   else {
     try{ state.nav = JSON.parse(nav) || []; }catch(e){ state.nav = []; }
     if(state.nav.length === 0) state.nav = seedNav();
+  }
+
+  const banners = localStorage.getItem(KEYS.banners);
+  if(banners){
+    try{ state.banners = JSON.parse(banners) || { left: null, right: null }; }catch(e){ state.banners = { left: null, right: null }; }
   }
 
   try{ state.cart = JSON.parse(localStorage.getItem(KEYS.cart)||'[]') || []; }catch(e){ state.cart = []; }
@@ -753,6 +771,30 @@ function seedNav(){
     { id: uid(), label: 'Exclusividades',filter: 'Exclusividades BR' },
     { id: uid(), label: 'Mais Vendidos', filter: '' }
   ];
+}
+
+/* ============================================================
+   RENDERIZAÇÃO - BANNERS HERO
+   ============================================================ */
+function renderHeroBanners(){
+  const leftImg = document.getElementById('hero-banner-left');
+  const rightImg = document.getElementById('hero-banner-right');
+  
+  if(state.banners.left){
+    leftImg.src = state.banners.left;
+    leftImg.classList.remove('hidden');
+  } else {
+    leftImg.src = '';
+    leftImg.classList.add('hidden');
+  }
+  
+  if(state.banners.right){
+    rightImg.src = state.banners.right;
+    rightImg.classList.remove('hidden');
+  } else {
+    rightImg.src = '';
+    rightImg.classList.add('hidden');
+  }
 }
 
 /* ============================================================
@@ -930,6 +972,7 @@ function openAdmin(){
   renderAdminCoupons();
   renderAdminUsers();
   renderAdminNav();
+  renderAdminBanners();
   openModal('admin-modal');
 }
 
@@ -938,6 +981,64 @@ function switchAdminTab(name, el){
   if(el) el.classList.add('active');
   document.querySelectorAll('#admin-modal .tab-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+name).classList.add('active');
+}
+
+/* ============================================================
+   ADMIN – BANNERS LATERAIS
+   ============================================================ */
+function renderAdminBanners(){
+  const lp = document.getElementById('banner-left-preview');
+  const rp = document.getElementById('banner-right-preview');
+  
+  if(state.banners.left){
+    lp.innerHTML = `<img src="${state.banners.left}" style="width:100%;height:100%;object-fit:contain;padding:8px">`;
+  } else {
+    lp.innerHTML = '<span style="color:var(--gray-light);font-size:12px">Sem foto</span>';
+  }
+  
+  if(state.banners.right){
+    rp.innerHTML = `<img src="${state.banners.right}" style="width:100%;height:100%;object-fit:contain;padding:8px">`;
+  } else {
+    rp.innerHTML = '<span style="color:var(--gray-light);font-size:12px">Sem foto</span>';
+  }
+}
+
+function handleBannerUpload(e, side) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      let w = img.width, h = img.height;
+      const maxSize = 500; 
+      if (w > h && w > maxSize) { h = h * maxSize / w; w = maxSize; }
+      else if (h > maxSize) { w = w * maxSize / h; h = maxSize; }
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      const base64 = canvas.toDataURL('image/png', 0.85);
+      
+      state.banners[side] = base64;
+      saveAll();
+      renderHeroBanners();
+      renderAdminBanners();
+      toast('Banner ' + (side === 'left' ? 'esquerdo' : 'direito') + ' atualizado!', 'success');
+    };
+    img.onerror = () => toast('Erro ao processar imagem', 'error');
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeBanner(side) {
+  if (!confirm('Remover este banner?')) return;
+  state.banners[side] = null;
+  saveAll();
+  renderHeroBanners();
+  renderAdminBanners();
+  toast('Banner removido', 'success');
 }
 
 /* ============================================================
@@ -1521,6 +1622,7 @@ function init(){
   loadAll();
   renderProducts();
   renderNav();
+  renderHeroBanners();
   updateCartCount();
   updateAccountUI();
 
