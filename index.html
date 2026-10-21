@@ -287,7 +287,7 @@ textarea.form-control{resize:vertical;min-height:100px}
   .nav-edit-row .form-control{grid-column:1/-1}
   .install-btn{bottom:95px;right:12px;padding:12px 18px 12px 14px;font-size:13px}
   .install-btn svg{width:20px;height:20px}
-  .logo-main{font-size:18px} /* Ajuste para mobile */
+  .logo-main{font-size:18px}
 }
 </style>
 </head>
@@ -453,6 +453,7 @@ textarea.form-control{resize:vertical;min-height:100px}
       <div class="admin-greeting" id="admin-greeting"></div>
       <div class="tabs">
         <button class="tab active" onclick="switchAdminTab('products',this)">🛒 Produtos</button>
+        <button class="tab" onclick="switchAdminTab('categories',this)">📁 Categorias</button>
         <button class="tab" onclick="switchAdminTab('coupons',this)">🎟️ Cupons</button>
         <button class="tab" onclick="switchAdminTab('users',this)">👥 Usuários</button>
         <button class="tab" onclick="switchAdminTab('menu',this)">📋 Menu</button>
@@ -471,6 +472,23 @@ textarea.form-control{resize:vertical;min-height:100px}
             <tbody id="admin-products-list"></tbody>
           </table>
         </div>
+      </div>
+
+      <!-- CATEGORIAS -->
+      <div class="tab-panel" id="panel-categories">
+        <div class="admin-greeting" style="margin-bottom:20px">
+          💡 Adicione, edite ou remova as categorias que aparecem no cadastro de produtos.
+        </div>
+        <div style="background:var(--dark-surface);padding:20px;border-radius:12px;margin-bottom:24px;border:1px solid var(--border)">
+          <div style="display:flex;gap:16px;align-items:end">
+            <div class="form-group" style="margin:0;flex:1">
+              <label>Nova Categoria</label>
+              <input type="text" class="form-control" id="new-category-name" placeholder="Ex: Motos">
+            </div>
+            <button class="btn btn-primary" onclick="addCategory()">+ Adicionar</button>
+          </div>
+        </div>
+        <div id="admin-categories-list"></div>
       </div>
 
       <!-- CUPONS -->
@@ -594,14 +612,7 @@ textarea.form-control{resize:vertical;min-height:100px}
         </div>
         <div class="form-group">
           <label>Categoria</label>
-          <select class="form-control" id="product-category">
-            <option value="Catalisadores">Catalisadores</option>
-            <option value="Linha Diesel">Linha Diesel</option>
-            <option value="Linha Carros">Linha Carros</option>
-            <option value="Linha Vans">Linha Vans</option>
-            <option value="Linha Pesada">Linha Pesada</option>
-            <option value="Exclusividades BR">Exclusividades BR</option>
-          </select>
+          <select class="form-control" id="product-category"></select>
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -717,12 +728,13 @@ const ADMIN_DEFAULT = { username:'PROGRAMADOR', password:'080888', role:'admin' 
 const KEYS = {
   products:'pc_products_v1', users:'pc_users_v1', coupons:'pc_coupons_v1',
   cart:'pc_cart_v1', session:'pc_session_v1', orders:'pc_orders_v1',
-  nav:'pc_nav_v1', banners:'pc_banners_v1'
+  nav:'pc_nav_v1', banners:'pc_banners_v1', categories:'pc_categories_v1'
 };
 
 let state = {
   products:[], users:[], coupons:[], cart:[], session:null, orders:[], nav:[],
-  banners: { left: null, right: null }
+  banners: { left: null, right: null },
+  categories: []
 };
 
 let currentImageData = null;
@@ -757,6 +769,7 @@ function saveAll(){
     localStorage.setItem(KEYS.orders, JSON.stringify(state.orders));
     localStorage.setItem(KEYS.nav, JSON.stringify(state.nav));
     localStorage.setItem(KEYS.banners, JSON.stringify(state.banners));
+    localStorage.setItem(KEYS.categories, JSON.stringify(state.categories));
   }catch(e){
     toast('Erro ao salvar dados. Armazenamento cheio?','error');
   }
@@ -792,6 +805,13 @@ function loadAll(){
     try{ state.banners = JSON.parse(banners) || { left: null, right: null }; }catch(e){ state.banners = { left: null, right: null }; }
   }
 
+  const cats = localStorage.getItem(KEYS.categories);
+  if(cats === null){ state.categories = seedCategories(); }
+  else {
+    try{ state.categories = JSON.parse(cats) || []; }catch(e){ state.categories = []; }
+    if(state.categories.length === 0) state.categories = seedCategories();
+  }
+
   try{ state.cart = JSON.parse(localStorage.getItem(KEYS.cart)||'[]') || []; }catch(e){ state.cart = []; }
   try{ state.session = JSON.parse(localStorage.getItem(KEYS.session)||'null'); }catch(e){ state.session = null; }
   try{ state.orders = JSON.parse(localStorage.getItem(KEYS.orders)||'[]') || []; }catch(e){ state.orders = []; }
@@ -821,6 +841,10 @@ function seedNav(){
     { id: uid(), label: 'Exclusividades',filter: 'Exclusividades BR' },
     { id: uid(), label: 'Mais Vendidos', filter: '' }
   ];
+}
+
+function seedCategories(){
+  return ["Catalisadores", "Linha Diesel", "Linha Carros", "Linha Vans", "Linha Pesada", "Exclusividades BR"];
 }
 
 /* ============================================================
@@ -1019,6 +1043,7 @@ function openAdmin(){
   }
   document.getElementById('admin-greeting').textContent = '👋 Logado como ' + state.session.username + ' — você tem acesso total ao sistema.';
   renderAdminProducts();
+  renderAdminCategories();
   renderAdminCoupons();
   renderAdminUsers();
   renderAdminNav();
@@ -1031,6 +1056,58 @@ function switchAdminTab(name, el){
   if(el) el.classList.add('active');
   document.querySelectorAll('#admin-modal .tab-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+name).classList.add('active');
+}
+
+/* ============================================================
+   ADMIN – CATEGORIAS
+   ============================================================ */
+function renderAdminCategories(){
+  const box = document.getElementById('admin-categories-list');
+  if(!box) return;
+  if(state.categories.length === 0){
+    box.innerHTML = '<div class="empty-state">Nenhuma categoria cadastrada.</div>';
+    return;
+  }
+  box.innerHTML = state.categories.map((cat, i) => `
+    <div class="nav-edit-row" style="grid-template-columns: 1fr auto;">
+      <input type="text" class="form-control" value="${esc(cat)}" onchange="updateCategory(${i}, this)">
+      <button class="btn btn-danger btn-sm" onclick="deleteCategory(${i})" title="Excluir">🗑️</button>
+    </div>
+  `).join('');
+}
+
+function addCategory(){
+  const input = document.getElementById('new-category-name');
+  const val = input.value.trim();
+  if(!val) { toast('Digite um nome para a categoria', 'error'); return; }
+  if(state.categories.includes(val)) { toast('Categoria já existe', 'error'); return; }
+  state.categories.push(val);
+  saveAll();
+  renderAdminCategories();
+  input.value = '';
+  toast('Categoria adicionada!', 'success');
+}
+
+function updateCategory(index, input){
+  const val = input.value.trim();
+  if(!val) { toast('A categoria não pode ficar vazia', 'error'); renderAdminCategories(); return; }
+  if(state.categories.includes(val) && state.categories[index] !== val) {
+     toast('Categoria já existe', 'error');
+     input.value = state.categories[index];
+     return;
+  }
+  state.categories[index] = val;
+  saveAll();
+  renderAdminCategories();
+  toast('Categoria atualizada!', 'success');
+}
+
+function deleteCategory(index){
+  if(!confirm('Excluir esta categoria? Os produtos já cadastrados com ela não serão alterados.')) return;
+  state.categories.splice(index, 1);
+  saveAll();
+  renderAdminCategories();
+  toast('Categoria removida', 'success');
 }
 
 /* ============================================================
@@ -1115,6 +1192,19 @@ function renderAdminProducts(){
   `).join('');
 }
 
+function populateCategorySelect(selected = '') {
+  const select = document.getElementById('product-category');
+  if (!select) return;
+  select.innerHTML = state.categories.map(c => `<option value="${esc(c)}" ${c === selected ? 'selected' : ''}>${esc(c)}</option>`).join('');
+  if (selected && !state.categories.includes(selected)) {
+     const opt = document.createElement('option');
+     opt.value = selected;
+     opt.textContent = selected;
+     opt.selected = true;
+     select.appendChild(opt);
+  }
+}
+
 function openProductForm(id){
   const form = document.getElementById('product-form');
   form.reset();
@@ -1125,7 +1215,7 @@ function openProductForm(id){
     document.getElementById('product-form-title').textContent = 'Editar Produto';
     document.getElementById('product-id').value = p.id;
     document.getElementById('product-name').value = p.name||'';
-    document.getElementById('product-category').value = p.category||'Catalisadores';
+    populateCategorySelect(p.category || '');
     document.getElementById('product-price').value = p.price||0;
     document.getElementById('product-old-price').value = p.oldPrice||'';
     document.getElementById('product-warranty').value = p.warranty||'12 meses';
@@ -1135,6 +1225,7 @@ function openProductForm(id){
   } else {
     document.getElementById('product-form-title').textContent = 'Novo Produto';
     document.getElementById('product-id').value = '';
+    populateCategorySelect();
   }
   currentImageData = null;
   openModal('product-form-modal');
